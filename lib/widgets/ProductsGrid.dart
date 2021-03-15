@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:new_app/models/product.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/ProductItem.dart';
-import '../providers/product.dart';
+import '../providers/products.dart';
 
-class ProductsGrid extends StatelessWidget {
+class ProductsGrid extends StatelessWidget {  
+  final bool showFavs;
+
+  ProductsGrid(this.showFavs);
+
   @override
   Widget build(BuildContext context) {
-    final productData = Provider.of<ProductProvider>(context);
-    final products = productData.products;
+    final productData = Provider.of<ProductsProvider>(context);
+    final products = showFavs ? productData.favoriteProducts : productData.products;
     
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
@@ -18,10 +21,9 @@ class ProductsGrid extends StatelessWidget {
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
       ), 
-      itemBuilder: (ctx, index) => ProductItem(
-        title: products[index].title,
-        id: products[index].id,
-        imageUrl: products[index].imageUrl,
+      itemBuilder: (ctx, index) => ChangeNotifierProvider.value(
+              value: products[index],
+              child: ProductItem(),
       ),
       itemCount: products.length,
     );
