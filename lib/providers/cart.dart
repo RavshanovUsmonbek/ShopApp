@@ -25,6 +25,19 @@ class Cart with ChangeNotifier {
     return _items.length;
   }
 
+  double get totalCost {
+    double total = 0;
+    _items.forEach((key, item) { 
+      total += item.quantity*item.price;
+    });
+    return total;
+  }
+
+  void removeItem(String productId){
+    _items.remove(productId);
+    notifyListeners();
+  }
+
   void addItem(String productId, double price, String title){
     if(_items.containsKey(productId)){
       _items.update(productId, (existingItem) =>CartItem(
@@ -36,7 +49,8 @@ class Cart with ChangeNotifier {
       );
 
     }
-    else{
+    else
+    {
       _items.putIfAbsent(productId, () => CartItem(
         id: DateTime.now().toString(), 
         title: title, 
@@ -44,6 +58,11 @@ class Cart with ChangeNotifier {
         price: price)
       );
     }
+    notifyListeners();
+  }
+
+  void clearCart(){
+    _items = {};
     notifyListeners();
   }
 }
